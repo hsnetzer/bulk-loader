@@ -6,25 +6,23 @@ require 'dbhandler.php';
 $path = $argv[1];
 $db = new HandlerDB($path);
 
-function trackWaypoints($db) {
-    
-    $trackpoints = $db->getTrackPoints();
-    $waypoints = $db->getWaypoints();
-    
-    foreach (LAT LON PAIR) {
-        $nearestNeighbor = $trackpoints[0];
-        $nearestDistance = haversine($nearestNeighbor['lat'], $nearestNeighbor['lon'], QUERYLAT, QUERYLON)
-        foreach ($trackpoints as $trackpoint) {
-            
-            $nextDistance = haversine(LAT LON, $trackpoint['lat'], $trackpoint['lon']);
-            
-            if ($trackNearness < $nearestDistance) {
-                $nearestNeighbor = $trackpoint;
-                $nearestDistance = $nextDistance;
-            }
+$trackpoints = $db->getTrackPoints();
+$waypoints = $db->getWaypoints();
+
+foreach (LAT LON PAIR) {
+    $nearestNeighbor = $trackpoints[0];
+    $nearestDistance = haversine($nearestNeighbor['lat'], $nearestNeighbor['lon'], QUERYLAT, QUERYLON)
+    foreach ($trackpoints as $trackpoint) {
+
+        $nextDistance = haversine(LAT LON, $trackpoint['lat'], $trackpoint['lon']);
+
+        if ($trackNearness < $nearestDistance) {
+            $nearestNeighbor = $trackpoint;
+            $nearestDistance = $nextDistance;
         }
     }
 }
+
 
 // returns displacement between points
 function equirectangular($lat1, $lon1, $lat2, $lon2) {
