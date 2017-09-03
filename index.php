@@ -31,11 +31,13 @@ if (($handle = fopen($read, "r")) !== FALSE) {
 
                 $nextDistance = haversine($lat, $lon, $trackpoint['lat'], $trackpoint['lon']);
 
-                if ($trackNearness < $nearestDistance) {
+                if ($nextDistance < $nearestDistance) {
                     $nearestNeighbor = $trackpoint;
                     $nearestDistance = $nextDistance;
                 }
             }
+            
+            echo($name + $time + $nearestNeighbor['meter']);
             
             // write the row
             fputcsv($whandle, [$name, $time, $lat, $lon, $nearestNeighbor['meter'], $nearestNeighbor['cumEle']]);
