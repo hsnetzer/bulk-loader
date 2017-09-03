@@ -4,25 +4,51 @@
  */
 require 'dbhandler.php';
 $path = $argv[1];
+$read = $argv[2];
+$write = $argv[3];
 $db = new HandlerDB($path);
 
 $trackpoints = $db->getTrackPoints();
 $waypoints = $db->getWaypoints();
 
-foreach (LAT LON PAIR) {
-    $nearestNeighbor = $trackpoints[0];
-    $nearestDistance = haversine($nearestNeighbor['lat'], $nearestNeighbor['lon'], QUERYLAT, QUERYLON)
-    foreach ($trackpoints as $trackpoint) {
 
-        $nextDistance = haversine(LAT LON, $trackpoint['lat'], $trackpoint['lon']);
+if (($handle = fopen($read, "r")) !== FALSE) {
+    if (($whandle = fopen($write, "w")) !== FALSE) {
+        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            // name, time need to be in 1st and second columns
+            $name = $data[0];
+            $time = $data[1];
 
-        if ($trackNearness < $nearestDistance) {
-            $nearestNeighbor = $trackpoint;
-            $nearestDistance = $nextDistance;
+            // lat, lon need to be in 3rd and 4th columns
+            $lat = $data[2];
+            $lon = $data[3];
+
+            // get base values for nn search
+            $nearestNeighbor = $trackpoints[0];
+            $nearestDistance = haversine($nearestNeighbor['lat'], $nearestNeighbor['lon'], $lat, $lon);
+
+            foreach ($trackpoints as $trackpoint) {
+
+                $nextDistance = haversine($lat, $lon, $trackpoint['lat'], $trackpoint['lon']);
+
+                if ($trackNearness < $nearestDistance) {
+                    $nearestNeighbor = $trackpoint;
+                    $nearestDistance = $nextDistance;
+                }
+            }
+            
+            // write the row
+            fputcsv($whandle, [$name, $time, $lat, $lon, $nearestNeighbor['meter'], $nearestNeighbor['cumEle']]);
+            
         }
+        fclose($whandle);
     }
+    fclose($handle);
 }
 
+function addLine($handle, $row) {
+    fputcsv($handle, $row);
+}
 
 // returns displacement between points
 function equirectangular($lat1, $lon1, $lat2, $lon2) {
