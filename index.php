@@ -46,10 +46,6 @@ if (($handle = fopen($read, "r")) !== FALSE) {
     fclose($handle);
 }
 
-function addLine($handle, $row) {
-    fputcsv($handle, $row);
-}
-
 // returns displacement between points
 function equirectangular($lat1, $lon1, $lat2, $lon2) {
     $r = 6371000; // earth radius meters
